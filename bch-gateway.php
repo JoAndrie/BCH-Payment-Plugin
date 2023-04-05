@@ -171,7 +171,6 @@ function init_bch_payment_gateway_class() {
             
 	}
 
-    if ( isset( $_POST['payment_method'] ) && $_POST['payment_method'] === 'bch_payment_gateway' ) {
         add_action( 'woocommerce_thankyou', 'show_qr_code_on_order_received_page', 10, 1 );
 
         function show_qr_code_on_order_received_page( $order_id ) {
@@ -195,17 +194,17 @@ function init_bch_payment_gateway_class() {
             $total =  $order->get_total();
 
             // $test = get_value();
-
+            
+            $payment_method = $order->get_payment_method();
             // Generate the payment URL using the Bitcoin address and the order ID
             $payment_url = $bch_address . '?amount=0.00001'; // Replace with your payment URL format
+            if ( $payment_method === 'bch_payment_gateway' ) {
 
-            // Generate the QR code image URL using the payment URL
-            $qr_code_url = 'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' . urlencode( $payment_url );
-
-            
-
-            // Display the QR code image on the order-received page
-            echo '<p>Please scan the QR code to pay:</p><img src="' . $qr_code_url . '">';
+                // Generate the QR code image URL using the payment URL
+                $qr_code_url = 'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' . urlencode( $payment_url );
+                // Display the QR code image on the order-received page
+                echo '<p>Please scan the QR code to pay:</p><img src="' . $qr_code_url . '">';
+            }
             
         } 
 
@@ -259,14 +258,7 @@ function init_bch_payment_gateway_class() {
             </script>
         <?php
         }
-    }
-    // // Register the payment gateway
-    // add_filter( 'woocommerce_payment_gateways', function ( $methods ) {
-    //     $methods[] = 'WC_BCH_Payment_Gateway';
-    //     return $methods;
-    // } );
 
-    // Add your payment gateway to WooCommerce
     function add_your_payment_gateway($methods) {
         $methods[] = 'WC_Your_Payment_Gateway';
         return $methods;
