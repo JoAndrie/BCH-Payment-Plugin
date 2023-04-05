@@ -1,0 +1,111 @@
+body {
+    margin: 0;
+    overflow: hidden;
+}
+.section {
+    height: 100vh;
+    background-color: #d2f4f6;
+}
+.bg-img {
+    width: 100vw;
+    height: 100vh;
+}
+.container {
+    position: absolute;
+    left: 0%;
+    top: 6%;
+    right: 0%;
+    bottom: auto;
+    display: block;
+    width: 750px;
+    margin-right: auto;
+    margin-left: auto;
+    padding: 20px;
+    border-radius: 15px;
+    background-color: #fff;
+    box-shadow: 1px 1px 3px 0 hsla(211.76470588235296, 1.52%, 57.35%, 1.00);
+    text-align: center;
+}
+.bch-logo {
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+}
+.total-amount {
+    margin-top: 15px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+.description {
+    margin-top: 15px;
+    padding-right: 100px;
+    padding-left: 100px;
+    font-family: 'Nunito', sans-serif;
+    color: #7f8790;
+    font-size: 16px;
+}
+.spacer {
+    height: 30px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.payment-amount {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-family: 'Nunito', sans-serif;
+    color: #7f8790;
+    font-size: 16px;
+}
+.horizontal-line {
+    height: 20px;
+    margin-right: 50px;
+    margin-left: 50px;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: hsla(211.76470588235296, 0.00%, 66.67%, 1.00);
+}
+button {
+    border-style: none;
+}
+button:hover {
+    background-color: #00b94a;
+    cursor: pointer;
+}
+.transaction-button {
+    display: inline-block;
+    width: 500px;
+    height: 50px;
+    border-radius: 8px;
+    background-color: #1aff76;
+}
+.c-transaction {
+    margin-top: 6px;
+    margin-left: 168px;
+    float: left;
+    font-family: 'Nunito', sans-serif;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+}
+.verify-icon {
+    margin-top: 6px;
+    margin-left: 10px;
+    float: left;
+}
+a {
+    text-decoration: none;
+    color: #7f8790;
+}
+a:hover {
+    color: black;
+}
+.transac-details {
+    margin-top: 20px;
+    font-family: 'Nunito', sans-serif;
+    color: #7f8790;
+    font-size: 16px;
+    font-weight: 500;
+}
+

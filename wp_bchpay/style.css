@@ -1,0 +1,154 @@
+/*
+	Theme Name: BCHPAY
+	Author: Anonymous
+	Description: Bitcoin Cash Payment Website
+	Version: 1.0
+*/
+
+*{
+	margin: 0;
+	padding: 0;
+	scroll-behavior: smooth;
+	overflow: hidden;	
+}
+.body{
+	background-color: #d2f4f6;
+}
+.bg-image{
+	width: 100%;
+	height: 100vh;
+	opacity: 0.7;
+}
+.header{
+	background-color: #fff;
+	text-align: right;
+	padding: 20px;
+	font-weight: bold;
+	box-shadow: 0 4px 6px -6px #222;
+	text-shadow: 0 0 1px #353434;
+	font-family: 'Nunito', sans-serif;
+	letter-spacing: 2px;
+}
+/* .logo-text{
+	padding-top: 20px;
+	padding-right: 27px;
+	padding-bottom: 20px;
+	box-shadow: 1px 1px 3px 0 #000;
+	font-family: 'Nunito', sans-serif;
+	font-size: 36px;
+	text-align: right;
+} */
+/* .bg-img{
+	position: absolute;
+	left: 150px;
+	z-index: 5;
+	margin-right: auto;
+	margin-left: auto;
+	opacity: 0.6;
+	width: 1000px;
+} */
+.head{
+	position: absolute;
+	left: 0%;
+	top: 20%;
+	right: 0%;
+	bottom: auto;
+	max-width: 714px;
+	margin-top: 0px;
+	margin-right: auto;
+	margin-left: auto;
+	text-align: center;
+}
+.section{
+	position: relative;
+	z-index: 3;
+	height: 100vh;
+}
+.p-one{
+	text-align: center;
+	text-decoration: none;
+}
+.i-text1{
+	font-family: 'Nunito', sans-serif;
+	font-size: 35px;
+	font-style: normal;
+	font-weight: 600;
+	letter-spacing: 1px;
+}
+.p-two{
+	font-family: 'Nunito', sans-serif;
+	font-size: 18px;
+	line-height: 44px;
+	text-align: center;
+}
+.btn{
+	position: absolute;
+	cursor: pointer;
+	max-height: 76px;
+	max-width: 462px;
+	margin-right: auto;
+	margin-left: auto;
+	border-radius: 8px;
+	background-color: #fff;
+	box-shadow: 1px 1px 3px -1px #000;
+}
+.container{
+	position: absolute;
+	left: 230px;
+	top: 298px;
+	right: 230px;
+	height: 67px;
+	max-height: 76px;
+	max-width: 462px;
+	margin-right: auto;
+	margin-left: auto;
+	border-radius: 8px;
+	background-color: #fff;
+	box-shadow: 1px 1px 3px -1px #000;
+}
+.container :hover{
+	background-color: rgb(228, 233, 233);
+}
+.btc-img{
+	position: relative;
+	z-index: 3;
+	max-width: 9%;
+	padding: 15px 20px;
+	font-size: 13px;
+}
+.b-cash{
+	color: #353434;
+	position: absolute;
+	left: 100px;
+	top: 8px;
+	margin-top: 5px;
+	padding-top: 0px;
+	font-family: 'Nunito', sans-serif;
+	font-size: 20px;
+	font-weight: 500;
+}
+.n-cost{
+	position: absolute;
+	left: 100px;
+	top: 38px;
+	margin-bottom: 5px;
+	font-family: 'Nunito', sans-serif;
+	color: #828282;
+	font-size: 14px;
+	font-weight: 500;
+}
+.btc{
+	position: absolute;
+	left: 396px;
+	top: 24px;
+	font-family: 'Nunito', sans-serif;
+	color: #828282;
+	font-size: 16px;
+	font-weight: 500;
+}
+@font-face{
+	font-family: 'Nats';
+	src:url('../fonts/NATS-Regular.ttf') format('truetype');
+	font-weight: 400;
+	font-style: normal;
+}
