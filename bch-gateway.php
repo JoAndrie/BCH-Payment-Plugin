@@ -194,8 +194,9 @@ function init_bch_payment_gateway_class() {
             $total =  $order->get_total();
 
             // $test = get_value();
-            
+
             $payment_method = $order->get_payment_method();
+
             // Generate the payment URL using the Bitcoin address and the order ID
             $payment_url = $bch_address . '?amount=0.00001'; // Replace with your payment URL format
             if ( $payment_method === 'bch_payment_gateway' ) {
@@ -216,10 +217,6 @@ function init_bch_payment_gateway_class() {
             <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.min.js"></script>
             <script type="text/javascript">
         
-
-            var consumer_key = 'ck_e65e294f14b8c6699c018a566044de40f08aa859';
-            var consumer_secret = 'cs_cf8c2caad14bb66a12fa73264bbe0d0112995edd';
-
             <?php 
             $payment_gateway_id = 'bch_payment_gateway';
             $payment_gateways   = WC_Payment_Gateways::instance();
@@ -228,41 +225,50 @@ function init_bch_payment_gateway_class() {
 
             $order = wc_get_order( $order_id );
             $total =  $order->get_total();
+            $store_url = home_url();
             ?>
             const address = '<?php echo $bch_address; ?>';
             var order_id = '<?php echo $order_id; ?>';
-            
+            var store_url = '<?php echo $store_url; ?>';
+
             var webSocket = $.simpleWebSocket({ url: `wss://watchtower.cash/ws/watch/bch/${address}/` });
-            var url = `https://paytaca-test.local/wp-json/wc/v3/orders/${order_id}`;
-            console.log(order_id);
-
+            console.log(store_url);
             webSocket.listen(function(message) {
-                    // reconnected listening
-                    console.log(message);
+                // reconnected listening
+                console.log(message);
 
-                    fetch('http://127.0.0.1:5000/process_order', {
+                fetch('http://127.0.0.1:8000/payment-gateway/process-order/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        consumer_key: consumer_key,
-                        consumer_secret: consumer_secret,
+                        store_url: store_url,
                         order_id: order_id
                     })
                 })
-                .then(response => response.json())
-                .then(result => console.log(result))
-                .catch(error => console.log('error', error));
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('Network response was not ok.');
+                    }
+                })
+                .then(data => {
+                    console.log(data);
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
             });
             </script>
         <?php
         }
-
-    function add_your_payment_gateway($methods) {
-        $methods[] = 'WC_Your_Payment_Gateway';
-        return $methods;
-    }
+        
+        function add_your_payment_gateway($methods) {
+            $methods[] = 'WC_Your_Payment_Gateway';
+            return $methods;
+        }
 
     add_filter('woocommerce_payment_gateways', 'add_your_payment_gateway');
 
