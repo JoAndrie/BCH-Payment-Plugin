@@ -21,6 +21,22 @@ function add_bch_payment_gateway_class($gateways) {
   return $gateways;
 }
 
+function add_cors_header() {
+    header( 'Access-Control-Allow-Origin: http://127.0.0.1:8000/' );
+    header( 'Access-Control-Allow-Methods: GET, POST, OPTIONS' );
+    header( 'Access-Control-Allow-Headers: Content-Type' );
+}
+
+function register_cors_header() {
+    add_action( 'rest_api_init', function () {
+        add_filter( 'rest_pre_serve_request', function( $value ) {
+        add_cors_header();
+        return $value;
+        });
+    });
+}
+
+register_cors_header();
 
 add_action('plugins_loaded', 'init_bch_payment_gateway_class', 0);
 /**
@@ -170,7 +186,7 @@ function init_bch_payment_gateway_class() {
     
 	}
 
-    add_action('woocommerce_thankyou', 'send_billing_details');
+    add_action('woocommerce_thankyou', 'send_to_django_backend');
 
     function send_to_django_backend($order_id) {
         // Get the order object
