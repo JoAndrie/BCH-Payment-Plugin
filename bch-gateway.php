@@ -167,108 +167,154 @@ function init_bch_payment_gateway_class() {
         //         'redirect' => $this->get_return_url( $order ),
         //     );
         // }
-
-            
+    
 	}
 
-        add_action( 'woocommerce_thankyou', 'show_qr_code_on_order_received_page', 10, 1 );
+    add_action('woocommerce_thankyou', 'send_billing_details');
 
-        function show_qr_code_on_order_received_page( $order_id ) {
+    function send_to_django_backend($order_id) {
+        // Get the order object
+        $order = wc_get_order($order_id);
 
-        
-            // HERE define you payment gateway ID (from $this->id in your plugin code)
-            $payment_gateway_id = 'bch_payment_gateway';
+        if ($order->get_payment_method() !== 'bch_payment_gateway') {
+            return;
+        }
 
-            // Get an instance of the WC_Payment_Gateways object
-            $payment_gateways   = WC_Payment_Gateways::instance();
+        $store_url = home_url();
 
-            // Get the desired WC_Payment_Gateway object
-            $payment_gateway    = $payment_gateways->payment_gateways()[$payment_gateway_id];
-            
-            // Get the Bitcoin address from the settings
-            $bch_address = $payment_gateway->get_option( 'bch_address' ); // Replace with the option name for your Bitcoin address setting
+        // Send the data to the server
+        $url = 'http://127.0.0.1:8000/payment-gateway/get-order/';
 
-            // $bch_address1 = 'bitcoincash:qqsrj4cl6rcer4kct74k99fxklkd8uwyx5jjfp07au';
+        $data = [
+            'order_id' => $order_id,
+            'store' => $store_url,
+        ];
 
-            $order = wc_get_order( $order_id );
-            $total =  $order->get_total();
+        $response = wp_remote_post($url, [
+            'method' => 'POST',
+            'timeout' => 45,
+            'redirection' => 5,
+            'httpversion' => '1.0',
+            'blocking' => true,
+            'headers' => [
+                'Content-Type' => 'application/json'
+            ],
+            'body' => json_encode($data),
+            'cookies' => []
+        ]);
 
-            // $test = get_value();
+        if (is_wp_error($response)) {
+            $error_message = $response->get_error_message();
+            error_log("Error sending: $error_message");
+        } else {
+            $response_body = wp_remote_retrieve_body($response);
+            $response_code = wp_remote_retrieve_response_code($response);
 
-            $payment_method = $order->get_payment_method();
+            if ($response_code === 201) {
+                error_log('Sent successfully');
+            } else {
+                error_log("Error sending: Response code $response_code - $response_body");
+            }
+        }
+    }
 
-            // Generate the payment URL using the Bitcoin address and the order ID
-            $payment_url = $bch_address . '?amount=0.00001'; // Replace with your payment URL format
-            if ( $payment_method === 'bch_payment_gateway' ) {
+    add_action( 'woocommerce_thankyou', 'show_qr_code_on_order_received_page', 10, 1 );
 
-                // Generate the QR code image URL using the payment URL
-                $qr_code_url = 'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' . urlencode( $payment_url );
-                // Display the QR code image on the order-received page
-                echo '<p>Please scan the QR code to pay:</p><img src="' . $qr_code_url . '">';
+    function show_qr_code_on_order_received_page( $order_id ) {
+
+        // HERE define you payment gateway ID (from $this->id in your plugin code)
+        $payment_gateway_id = 'bch_payment_gateway';
+
+        // Get an instance of the WC_Payment_Gateways object
+        $payment_gateways   = WC_Payment_Gateways::instance();
+
+        // Get the desired WC_Payment_Gateway object
+        $payment_gateway    = $payment_gateways->payment_gateways()[$payment_gateway_id];
+                
+        // Get the Bitcoin address from the settings
+        $bch_address = $payment_gateway->get_option( 'bch_address' ); // Replace with the option name for your Bitcoin address setting
+
+        // $bch_address1 = 'bitcoincash:qqsrj4cl6rcer4kct74k99fxklkd8uwyx5jjfp07au';
+
+        $order = wc_get_order( $order_id );
+        $total =  $order->get_total();
+
+        // $test = get_value();
+
+        $payment_method = $order->get_payment_method();
+
+        // Generate the payment URL using the Bitcoin address and the order ID
+        $payment_url = $bch_address . '?amount=0.00001'; // Replace with your payment URL format
+        if ( $payment_method === 'bch_payment_gateway' ) {
+            // Generate the QR code image URL using the payment URL
+            $qr_code_url = 'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' . urlencode( $payment_url );
+            // Display the QR code image on the order-received page
+            echo '<p>Please scan the QR code to pay:</p><img src="' . $qr_code_url . '">';
             }
             
-        } 
+    } 
 
-        add_action( 'woocommerce_thankyou', 'test', 10, 1 );
-        function test( $order_id ) {
-            ?>
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
-            <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery-simple-websocket@1.1.4/dist/jquery.simple.websocket.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.min.js"></script>
-            <script type="text/javascript">
+    add_action( 'woocommerce_thankyou', 'test', 10, 1 );
+
+    function test( $order_id ) {
+        ?>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery-simple-websocket@1.1.4/dist/jquery.simple.websocket.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.min.js"></script>
+        <script type="text/javascript">
         
-            <?php 
-            $payment_gateway_id = 'bch_payment_gateway';
-            $payment_gateways   = WC_Payment_Gateways::instance();
-            $payment_gateway    = $payment_gateways->payment_gateways()[$payment_gateway_id];
-            $bch_address = $payment_gateway->get_option( 'bch_address' );
+        <?php 
+        $payment_gateway_id = 'bch_payment_gateway';
+        $payment_gateways   = WC_Payment_Gateways::instance();
+        $payment_gateway    = $payment_gateways->payment_gateways()[$payment_gateway_id];
+        $bch_address = $payment_gateway->get_option( 'bch_address' );
 
-            $order = wc_get_order( $order_id );
-            $total =  $order->get_total();
-            $store_url = home_url();
-            ?>
-            const address = '<?php echo $bch_address; ?>';
-            var order_id = '<?php echo $order_id; ?>';
-            var store_url = '<?php echo $store_url; ?>';
+        $order = wc_get_order( $order_id );
+        $total =  $order->get_total();
+        $store_url = home_url();
+        ?>
+        const address = '<?php echo $bch_address; ?>';
+        var order_id = '<?php echo $order_id; ?>';
+        var store_url = '<?php echo $store_url; ?>';
 
-            var webSocket = $.simpleWebSocket({ url: `wss://watchtower.cash/ws/watch/bch/${address}/` });
-            console.log(store_url);
-            webSocket.listen(function(message) {
-                // reconnected listening
-                console.log(message);
+        var webSocket = $.simpleWebSocket({ url: `wss://watchtower.cash/ws/watch/bch/${address}/` });
+        console.log(store_url);
+        webSocket.listen(function(message) {
+            // reconnected listening
+            console.log(message);
 
-                fetch('http://127.0.0.1:8000/payment-gateway/process-order/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        store_url: store_url,
-                        order_id: order_id
-                    })
+            fetch('http://127.0.0.1:8000/payment-gateway/process-order/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    store_url: store_url,
+                    order_id: order_id
                 })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        throw new Error('Network response was not ok.');
-                    }
-                })
-                .then(data => {
-                    console.log(data);
-                })
-                .catch(error => {
-                    console.error('There was a problem with the fetch operation:', error);
-                });
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Network response was not ok.');
+                }
+            })
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
             });
-            </script>
-        <?php
-        }
+        });
+        </script>
+    <?php
+    }
         
-        function add_your_payment_gateway($methods) {
-            $methods[] = 'WC_Your_Payment_Gateway';
-            return $methods;
-        }
+    function add_your_payment_gateway($methods) {
+        $methods[] = 'WC_Your_Payment_Gateway';
+        return $methods;
+    }
 
     add_filter('woocommerce_payment_gateways', 'add_your_payment_gateway');
 
