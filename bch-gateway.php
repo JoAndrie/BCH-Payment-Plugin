@@ -234,6 +234,37 @@ function init_bch_payment_gateway_class() {
     
     function show_qr_code_on_order_received_page( $order_id ) {
 
+        $url = 'http://127.0.0.1:8000/payment-gateway/total-bch/';
+
+        $data = [
+            'order_id' => $order_id,
+        ];
+
+        $response = wp_remote_post($url, [
+            'method' => 'POST',
+            'headers' => [
+                'Content-Type' => 'application/json'
+            ],
+            'body' => json_encode($data),
+            'cookies' => []
+        ]);
+
+        if (is_wp_error($response)) {
+            $error_message = $response->get_error_message();
+            error_log("Error sending: $error_message");
+        } else {
+            $response_body = wp_remote_retrieve_body($response);
+            $response_code = wp_remote_retrieve_response_code($response);
+
+            if ($response_code === 200) {
+                $data = json_decode($response_body);
+                $total_bch = $data->total_bch;
+                // Use the total_bch value as needed
+            } else {
+                error_log("Error sending: Response code $response_code - $response_body");
+            }
+        }
+
         // HERE define you payment gateway ID (from $this->id in your plugin code)
         $payment_gateway_id = 'bch_payment_gateway';
 
@@ -256,7 +287,7 @@ function init_bch_payment_gateway_class() {
         $payment_method = $order->get_payment_method();
 
         // Generate the payment URL using the Bitcoin address and the order ID
-        $payment_url = $bch_address . '?amount=0.00001'; // Replace with your payment URL format
+        $payment_url = $bch_address . '?amount='. $total_bch; // Replace with your payment URL format
         if ( $payment_method === 'bch_payment_gateway' ) {
             // Generate the QR code image URL using the payment URL
             $qr_code_url = 'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' . urlencode( $payment_url );
