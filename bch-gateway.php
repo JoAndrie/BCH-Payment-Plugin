@@ -208,10 +208,6 @@ function init_bch_payment_gateway_class() {
 
         $response = wp_remote_post($url, [
             'method' => 'POST',
-            'timeout' => 45,
-            'redirection' => 5,
-            'httpversion' => '1.0',
-            'blocking' => true,
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
@@ -235,7 +231,7 @@ function init_bch_payment_gateway_class() {
     }
 
     add_action( 'woocommerce_thankyou', 'show_qr_code_on_order_received_page', 10, 1 );
-
+    
     function show_qr_code_on_order_received_page( $order_id ) {
 
         // HERE define you payment gateway ID (from $this->id in your plugin code)
