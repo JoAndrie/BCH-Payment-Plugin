@@ -76,10 +76,6 @@ function init_bch_payment_gateway_class() {
             $this->title = $this->get_option( 'title' );
             $this->description = $this->get_option( 'description' );
             $this->enabled = $this->get_option( 'enabled' );
-            $this->bch_address = $this->get_option( 'bch_address' );
-            $this->testmode = 'yes' === $this->get_option( 'testmode' );
-            $this->private_key = $this->testmode ? $this->get_option( 'test_private_key' ) : $this->get_option( 'private_key' );
-            $this->publishable_key = $this->testmode ? $this->get_option( 'test_publishable_key' ) : $this->get_option( 'publishable_key' );
         
             // This action hook saves the settings
             add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
@@ -107,48 +103,12 @@ function init_bch_payment_gateway_class() {
                     'description'   => '',
                     'default'       => '',
                 ),
-                'bch_address' => array(
-                    'title'         => 'BCH Address',
-                    'type'          => 'text',
-                    'description'   => 'Enter your BCH address to receive payments.',
-                    'default'       => '',
-                ),
                 'description' => array(
                     'title'         => 'Description',
                     'type'          => 'textarea',
                     'description'   => '',
                     'default'       => 'Pay with Bitcoin Cash',
                 ),
-                'confirmation' => array(
-                    'title'         => 'BCH Confirmation',
-                    'type'          => 'number',
-                    'description'   => '',
-                    'default'       => '',
-                ),
-                'decimals' => array(
-                    'title'         => 'BCH Amount Decimals',
-                    'type'          => 'select',
-                    'description'   => '',
-                    'default'       => 'option2',
-                    'options'       => array(
-                        'option1' => '2',
-                        'option2' => '4',
-                        'option3' => '6',
-                        'option4' => '8'
-                    ),
-                ),
-                'block_explorer' => array(
-                    'title'         => 'BCH Block Explorer',
-                    'type'          => 'select',
-                    'description'   => '',
-                    'default'       => 'option1',
-                    'options'       => array(
-                        'option1' => 'Option 1',
-                        'option2' => 'Option 2',
-                        'option3' => 'Option 3'
-                    ),
-                )
-
             );
         }
 
