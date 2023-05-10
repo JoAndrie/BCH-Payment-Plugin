@@ -310,10 +310,10 @@ function init_bch_payment_gateway_class() {
             webSocket.listen(function(message) {
             // reconnected listening
                 console.log(message);
-                total_recieved = JSON.parse(message.amount);
-                console.log(total_recieved);
+                total_received = JSON.parse(message.amount);
+                console.log(total_received);
 
-                if (total_bch >= total_recieved) {
+                if (total_bch >= total_received) {
                     console.log("The amount matches the desired amount!");
                     fetch('http://127.0.0.1:8000/payment-gateway/process-order/', {
                         method: 'POST',
@@ -323,7 +323,7 @@ function init_bch_payment_gateway_class() {
                         body: JSON.stringify({
                             store_url: store_url,
                             order_id: order_id,
-                            total_recieved: total_recieved
+                            total_received: total_received
                         })
                     })
                     .then(response => {
