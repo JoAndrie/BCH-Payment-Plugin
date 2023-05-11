@@ -222,12 +222,11 @@ function init_bch_payment_gateway_class() {
                 $data = json_decode($response_body);
                 $total_bch = $data->total_bch;
                 $bch_address = $data->bch_address;
-                // Use the total_bch value as needed
+            
             } else {
                 error_log("Error sending: Response code $response_code - $response_body");
             }
         }
-
 
         // HERE define you payment gateway ID (from $this->id in your plugin code)
         $payment_gateway_id = 'bch_payment_gateway';
@@ -248,10 +247,13 @@ function init_bch_payment_gateway_class() {
         // Generate the payment URL using the Bitcoin address and the order ID
         $payment_url = $bch_address . '?amount='. $total_bch; // Replace with your payment URL format
         if ( $payment_method === 'bch_payment_gateway' ) {
+            
             // Generate the QR code image URL using the payment URL
             $qr_code_url = 'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' . urlencode( $payment_url );
             // Display the QR code image on the order-received page
-            echo '<p>Please scan the QR code to pay:</p><img src="' . $qr_code_url . '">';
+            $total_bch_decimal = number_format($total_bch, 8);
+            echo '<p>Please scan the QR code to pay ' . $total_bch_decimal . ' BCH
+            </p><img src="' . $qr_code_url . '">';
             }
         
         
@@ -273,8 +275,9 @@ function init_bch_payment_gateway_class() {
                 total_received = JSON.parse(message.amount);
                 console.log(total_received);
 
-                if (total_bch >= total_received) {
+                if (total_bch <= total_received) {
                     console.log("The amount matches the desired amount!");
+                    displayPopup('Payment Successful. Thank you and have a nice day.');
                     fetch('http://127.0.0.1:8000/payment-gateway/process-order/', {
                         method: 'POST',
                         headers: {
@@ -301,9 +304,35 @@ function init_bch_payment_gateway_class() {
                     });
                 }
                 else {
+                    displayPopup('The amount you have sent does not match the desired amount. Please try again');
                     console.log("The amount does not match the desired amount.");
                 }
             });
+
+            function displayPopup(message) {
+                // Create a popup element
+                var popup = $('<div>').addClass('payment-popup')
+                                      .text(message)
+                                      .appendTo('body');
+
+                // Add styling to the popup element
+                popup.css({
+                    'position': 'fixed',
+                    'top': '50%',
+                    'left': '50%',
+                    'transform': 'translate(-50%, -50%)',
+                    'padding': '20px',
+                    'background': '#fff',
+                    'border': '1px solid #ccc',
+                    'box-shadow': '0 0 10px rgba(0, 0, 0, 0.2)',
+                    'z-index': '9999'
+                });
+                // Remove the popup after 5 seconds
+                setTimeout(function() {
+                    popup.remove();
+                }, 5000);
+
+            }
         </script>
 
         <?php   
