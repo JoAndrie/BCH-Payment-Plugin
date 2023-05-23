@@ -245,16 +245,20 @@ function init_bch_payment_gateway_class() {
         $payment_method = $order->get_payment_method();
 
         // Generate the payment URL using the Bitcoin address and the order ID
-        $payment_url = $bch_address . '?amount='. $total_bch; // Replace with your payment URL format
-        if ( $payment_method === 'bch_payment_gateway' ) {
-            
-            // Generate the QR code image URL using the payment URL
-            $qr_code_url = 'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' . urlencode( $payment_url );
-            // Display the QR code image on the order-received page
-            $total_bch_decimal = number_format($total_bch, 8);
-            echo '<p>Please scan the QR code to pay ' . $total_bch_decimal . ' BCH
-            </p><img src="' . $qr_code_url . '">';
+        $payment_url = $bch_address . '?amount=' . $total_bch; // Replace with your payment URL format
+
+        if ($payment_method === 'bch_payment_gateway') {
+            // Check if both bch_address and total_bch are empty
+            if (empty($bch_address) && empty($total_bch)) {
+                echo 'There was an unexpected error. Please refresh the page or report this error to the Site Administrator';
+            } else {
+                // Generate the QR code image URL using the payment URL
+                $qr_code_url = 'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' . urlencode($payment_url);
+                // Display the QR code image on the order-received page
+                $total_bch_decimal = number_format($total_bch, 8);
+                echo '<p>Please scan the QR code to pay ' . $total_bch_decimal . ' BCH</p><img src="' . $qr_code_url . '">';
             }
+        }
         
         
          ?>
@@ -338,12 +342,12 @@ function init_bch_payment_gateway_class() {
         <?php   
     } 
         
-    function add_your_payment_gateway($methods) {
-        $methods[] = 'WC_Your_Payment_Gateway';
-        return $methods;
-    }
+    // function add_your_payment_gateway($methods) {
+    //     $methods[] = 'WC_Your_Payment_Gateway';
+    //     return $methods;
+    // }
 
-    add_filter('woocommerce_payment_gateways', 'add_your_payment_gateway');
+    // add_filter('woocommerce_payment_gateways', 'add_your_payment_gateway');
 
 	
 	
